@@ -22,6 +22,26 @@
                 <h2 style="color: #C4A54E; margin-top: 0; font-size: 22px;">Resumo Diário de Processamento</h2>
                 <p>Olá,</p>
                 <p>Abaixo segue o demonstrativo consolidado dos lançamentos efetuados na data de hoje:</p>
+
+                <!--
+                ========================================================================================
+                DICA DE IMPLEMENTAÇÃO SQL (TABELA DINÂMICA):
+                Para preencher esta tabela com várias linhas, crie uma variável de texto no SQL 
+                (ex: @LINHAS_HTML NVARCHAR(MAX)) e faça um SELECT ou CURSOR para concatenar os <tr>.
+                
+                EXEMPLO SQL:
+                SET @LINHAS_HTML = '';
+                SELECT @LINHAS_HTML = @LINHAS_HTML + 
+                    '<tr>' +
+                    '<td style="padding: 10px; border-bottom: 1px solid #eee;">' + ISNULL(FILIAL, '') + '</td>' +
+                    '<td style="padding: 10px; border-bottom: 1px solid #eee;">' + ISNULL(MODULO, '') + '</td>' +
+                    '</tr>'
+                FROM SUA_TABELA WHERE CONDICAO = X;
+                
+                Depois, use REPLACE no corpo principal do e-mail:
+                SET @CORPO = REPLACE(@CORPO, '[LINHAS_TABELA]', @LINHAS_HTML);
+                ========================================================================================
+                -->
                 
                 <!-- Tabela de Dados Dinâmicos -->
                 <table width="100%" border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; border-color: #dddddd; margin-top: 20px; margin-bottom: 20px;">

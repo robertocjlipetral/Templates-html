@@ -33,6 +33,21 @@
                     </tr>
                 </table>
 
+                <!--
+                ========================================================================================
+                DICA DE IMPLEMENTAÇÃO SQL (BOTÃO DE AÇÃO):
+                Para que o botão direcione o usuário para a página correta com o ID da transação, 
+                concatene a variável na URL antes de substituir a tag [LINK_SISTEMA].
+                
+                EXEMPLO SQL:
+                DECLARE @URL VARCHAR(255);
+                SET @URL = 'https://api.lipetral.com.br/sistema/aprovar?docId=' + CAST(@DOC_ID AS VARCHAR);
+                
+                E no Replace:
+                SET @CORPO = REPLACE(@CORPO, '[LINK_SISTEMA]', @URL);
+                ========================================================================================
+                -->
+
                 <!-- Botão de Ação -->
                 <table border="0" cellspacing="0" cellpadding="0" style="margin: 25px 0;">
                     <tr>
