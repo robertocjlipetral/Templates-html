@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Showcase de Templates - Grupo Lipetral</title>
+    <style>
+        :root {
+            --primary-color: #C4A54E;
+            --bg-dark: #1e1e1e;
+            --bg-light: #f4f4f4;
+            --text-color: #333333;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-light);
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Barra Lateral (Menu) */
+        aside {
+            width: 320px;
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            border-right: 3px solid var(--primary-color);
+            box-shadow: 4px 0 10px rgba(0,0,0,0.2);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .sidebar-header img {
+            width: 140px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h1 {
+            font-size: 16px;
+            color: var(--primary-color);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .menu-container {
+            padding: 20px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .section-title {
+            font-size: 13px;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 8px;
+            margin-top: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            background-color: #2a2a2a;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        select:hover, select:focus {
+            border-color: var(--primary-color);
+        }
+
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .card-item {
+            padding: 10px 15px;
+            background-color: #2a2a2a;
+            border-left: 4px solid #444;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .card-item:hover {
+            background-color: #333;
+            color: #fff;
+            border-left-color: var(--primary-color);
+            transform: translateX(3px);
+        }
+
+        .card-item.active {
+            background-color: #3a3a3a;
+            color: #fff;
+            border-left-color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* Área Principal (Showcase / Preview) */
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #e5e5e5;
+        }
+
+        .preview-header {
+            background-color: #ffffff;
+            padding: 15px 30px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preview-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .path-badge {
+            background-color: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #666;
+            border: 1px solid #ccc;
+        }
+
+        .preview-body {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        iframe {
+            width: 100%;
+            max-width: 650px;
+            height: 100%;
+            background: #fff;
+            border: none;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra Lateral de Seleções -->
+    <aside>
+        <div class="sidebar-header">
+            <img src="https://api.lipetral.com.br:5030/portalrh/Contents/images/default/masterpage/grupo_lipe.PNG" alt="Grupo Lipetral">
+            <h1>Email Showcase</h1>
+        </div>
+        
+        <div class="menu-container">
+            <!-- Seletor de Marca -->
+            <div class="section-title">1. Selecione a Marca</div>
+            <select id="marcaSelect" onchange="atualizarCards()">
+                <option value="Grupo-Lipetral">Grupo Lipetral</option>
+                <option value="Lipetral-Agro">Lipetral Agro</option>
+                <option value="Lipetral-Irrigacao">Lipetral Irrigação</option>
+                <option value="Lipetral-Maquinas">Lipetral Máquinas</option>
+                <option value="Lipetral-Metalmecanica">Lipetral Metalmecânica</option>
+                <option value="Lipetral-Transportes">Lipetral Transportes</option>
+            </select>
+
+            <!-- Lista de Cards/Tipos de E-mail -->
+            <div class="section-title">2. Selecione o Template</div>
+            <div class="card-list" id="cardList">
+                <!-- Preenchido via JavaScript -->
+            </div>
+        </div>
+    </aside>
+
+    <!-- Área de Visualização -->
+    <main>
+        <div class="preview-header">
+            <h2 id="previewTitle">Selecione um template</h2>
+            <span class="path-badge" id="pathBadge">Nenhum arquivo selecionado</span>
+        </div>
+        <div class="preview-body">
+            <iframe id="previewFrame" src="about:blank"></iframe>
+        </div>
+    </main>
+
+    <script>
+        // Relação de templates disponíveis em cada pasta com base na sua estrutura
+        const templates = [
+            { id: 'Action', nome: 'Action / Chamada' },
+            { id: 'Alerta', nome: 'Alerta' },
+            { id: 'Aviso', nome: 'Aviso' },
+            { id: 'Erros', nome: 'Erros / Falhas' },
+            { id: 'Indicadores', nome: 'Indicadores (KPIs)' },
+            { id: 'Informativo', nome: 'Informativo' },
+            { id: 'Sucesso', nome: 'Sucesso' },
+            { id: 'Tabela', nome: 'Tabela Dinâmica' }
+        ];
+
+        function atualizarCards() {
+            const marca = document.getElementById('marcaSelect').value;
+            const container = document.getElementById('cardList');
+            container.innerHTML = '';
+
+            templates.forEach((tpl, index) => {
+                const div = document.createElement('div');
+                div.className = 'card-item';
+                div.innerText = tpl.nome;
+                div.onclick = () => carregarTemplate(marca, tpl.id, tpl.nome, div);
+                container.appendChild(div);
+
+                // Seleciona o primeiro por padrão ao trocar de marca
+                if (index === 0) {
+                    div.click();
+                }
+            });
+        }
+
+        function carregarTemplate(marca, arquivoId, nomeAmigavel, elementoCard) {
+            // Remove active de todos
+            document.querySelectorAll('.card-item').forEach(el => el.classList.remove('active'));
+            // Adiciona active no clicado
+            elementoCard.classList.add('active');
+
+            // Caminho relativo mapeado de acordo com a árvore de pastas
+            const caminhoArquivo = `${marca}/${arquivoId}.html`;
+
+            // Atualiza textos da barra superior
+            document.getElementById('previewTitle').innerText = `${nomeAmigavel} (${marca.replace('-', ' ')})`;
+            document.getElementById('pathBadge').innerText = caminhoArquivo;
+
+            // Carrega no iframe
+            document.getElementById('previewFrame').src = caminhoArquivo;
+        }
+
+        // Inicializa ao carregar a página
+        window.onload = () => {
+            atualizarCards();
+        };
+    </script>
+</body>
+</html>
