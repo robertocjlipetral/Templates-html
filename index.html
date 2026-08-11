@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Templates de Email - Grupo Lipetral</title>
+    <title>Templates - Grupo Lipetral</title>
     <style>
         :root {
             --primary-color: #C4A54E;
@@ -116,7 +116,7 @@
             font-weight: bold;
         }
 
-        /* Área Principal ( / Preview) */
+        /* Área Principal (Preview) */
         main {
             flex-grow: 1;
             display: flex;
@@ -133,20 +133,49 @@
             align-items: center;
         }
 
-        .preview-header h2 {
-            margin: 0;
+        .header-info h2 {
+            margin: 0 0 5px 0;
             font-size: 18px;
             color: #333;
         }
 
         .path-badge {
             background-color: #f0f0f0;
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: 4px;
             font-family: monospace;
             font-size: 12px;
             color: #666;
             border: 1px solid #ccc;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-copiar {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-copiar:hover {
+            background-color: #b09140;
+        }
+
+        .toast {
+            font-size: 13px;
+            color: #27ae60;
+            font-weight: bold;
+            display: none;
         }
 
         .preview-body {
@@ -174,11 +203,10 @@
     <aside>
         <div class="sidebar-header">
             <img src="https://api.lipetral.com.br:5030/portalrh/Contents/images/default/masterpage/grupo_lipe.PNG" alt="Grupo Lipetral">
-            <h1>Email </h1>
+            <h1>Email Templates</h1>
         </div>
         
         <div class="menu-container">
-            <!-- Seletor de Marca -->
             <div class="section-title">1. Selecione a Marca</div>
             <select id="marcaSelect" onchange="atualizarCards()">
                 <option value="Grupo-Lipetral">Grupo Lipetral</option>
@@ -189,19 +217,22 @@
                 <option value="Lipetral-Transportes">Lipetral Transportes</option>
             </select>
 
-            <!-- Lista de Cards/Tipos de E-mail -->
             <div class="section-title">2. Selecione o Template</div>
-            <div class="card-list" id="cardList">
-                <!-- Preenchido via JavaScript -->
-            </div>
+            <div class="card-list" id="cardList"></div>
         </div>
     </aside>
 
     <!-- Área de Visualização -->
     <main>
         <div class="preview-header">
-            <h2 id="previewTitle">Selecione um template</h2>
-            <span class="path-badge" id="pathBadge">Nenhum arquivo selecionado</span>
+            <div class="header-info">
+                <h2 id="previewTitle">Selecione um template</h2>
+                <span class="path-badge" id="pathBadge">Nenhum arquivo selecionado</span>
+            </div>
+            <div class="header-actions">
+                <span class="toast" id="toastMsg">Copiado com sucesso!</span>
+                <button class="btn-copiar" onclick="copiarHtmlAtual()">Copiar Código HTML</button>
+            </div>
         </div>
         <div class="preview-body">
             <iframe id="previewFrame" src="about:blank"></iframe>
@@ -209,7 +240,6 @@
     </main>
 
     <script>
-        // Relação de templates disponíveis em cada pasta com base na sua estrutura
         const templates = [
             { id: 'Action', nome: 'Action / Chamada' },
             { id: 'Alerta', nome: 'Alerta' },
@@ -220,6 +250,8 @@
             { id: 'Sucesso', nome: 'Sucesso' },
             { id: 'Tabela', nome: 'Tabela Dinâmica' }
         ];
+
+        let caminhoAtual = '';
 
         function atualizarCards() {
             const marca = document.getElementById('marcaSelect').value;
@@ -233,7 +265,6 @@
                 div.onclick = () => carregarTemplate(marca, tpl.id, tpl.nome, div);
                 container.appendChild(div);
 
-                // Seleciona o primeiro por padrão ao trocar de marca
                 if (index === 0) {
                     div.click();
                 }
@@ -241,23 +272,38 @@
         }
 
         function carregarTemplate(marca, arquivoId, nomeAmigavel, elementoCard) {
-            // Remove active de todos
             document.querySelectorAll('.card-item').forEach(el => el.classList.remove('active'));
-            // Adiciona active no clicado
             elementoCard.classList.add('active');
 
-            // Caminho relativo mapeado de acordo com a árvore de pastas
-            const caminhoArquivo = `${marca}/${arquivoId}.html`;
+            caminhoAtual = `${marca}/${arquivoId}.html`;
 
-            // Atualiza textos da barra superior
             document.getElementById('previewTitle').innerText = `${nomeAmigavel} (${marca.replace('-', ' ')})`;
-            document.getElementById('pathBadge').innerText = caminhoArquivo;
-
-            // Carrega no iframe
-            document.getElementById('previewFrame').src = caminhoArquivo;
+            document.getElementById('pathBadge').innerText = caminhoAtual;
+            document.getElementById('previewFrame').src = caminhoAtual;
         }
 
-        // Inicializa ao carregar a página
+        async function copiarHtmlAtual() {
+            if (!caminhoAtual) return;
+            try {
+                // Faz o fetch do arquivo HTML físico na pasta
+                let response = await fetch(caminhoAtual);
+                if (!response.ok) throw new Error('Arquivo não encontrado');
+                let htmlContent = await response.text();
+
+                // Copia para a área de transferência
+                await navigator.clipboard.writeText(htmlContent);
+
+                // Mostra mensagem de sucesso temporária
+                const toast = document.getElementById('toastMsg');
+                toast.style.display = 'inline';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 2500);
+            } catch (err) {
+                alert('Erro ao copiar o código. Verifique se o arquivo HTML existe na pasta correspondente.');
+            }
+        }
+
         window.onload = () => {
             atualizarCards();
         };
